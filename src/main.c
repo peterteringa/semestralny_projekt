@@ -28,6 +28,7 @@ SOFTWARE.
 
 /* Includes */
 #include <stddef.h>
+#include <stdio.h>
 #include "stm32l1xx.h"
 #include "hd44780.h"
 
@@ -72,28 +73,19 @@ int main(void)
 	lcdInit();
 
 	clearLCD();
-	int otacky = 0, rad, i;
-	char rpm[4];
+	int otacky = 0;
+
 	cursoroff();
 	printString("Otacky: ");
+
 
   /* Infinite loop */
   while (1)
   {
-
-	  rad = 1000;
-	  if (otacky > 1000) otacky = 0;
-	  for (i=0;i<4;i++) {
-		  rpm[i] = (otacky/rad)%10 + '0';
-		  rad /= 10;
-	  }
 	  otacky++;
-	  if (otacky == 1000) {
-		  toLine2();
-		  printString("tramtadadaaa");
-	  }
+
 	  cursorpos(9,1);
-	  printString(&rpm[0]);
+	  printString(num2text(otacky));
 	  Delay(0xffff);
 
   }

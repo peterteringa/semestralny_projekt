@@ -10,3 +10,4 @@ void toLine2(void);
 void Delay(uint32_t nCount);
 void cursoroff(void);
 void cursorpos(int col, int row);
+int num2text(uint16_t cislo);

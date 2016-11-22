@@ -15,15 +15,17 @@ void downNib(uint8_t c);
 void Delay(uint32_t nCount);
 
 void lcdInit(void) {
-	GPIO_InitTypeDef GPIO_InitStructure;
-	//Init GPIOs
-	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
+
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);						//GPIOA clock enable
+
+	GPIO_InitTypeDef GPIO_InitStructure;									//GPIOA initialization
 	GPIO_InitStructure.GPIO_Pin   = EN | RS | D4 | D5 | D6 | D7; 
 	GPIO_ResetBits(LCD_Port, EN | RS | D4 | D5 | D6 | D7);
 	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
 	GPIO_Init(LCD_Port, &GPIO_InitStructure);
+
 	GPIO_ResetBits(LCD_Port, EN | RS | D4 | D5 | D6 | D7);
 	Delay(0xffff);
 	sendCMD(0x02);
@@ -36,9 +38,9 @@ void lcdInit(void) {
 }
 
 void strobeEN(void) {
-	Delay(0xfff);
+	Delay(0x3ff);
 	GPIO_SetBits(LCD_Port, EN);
-	Delay(0xfff);
+	Delay(0x3ff);
 	GPIO_ResetBits(LCD_Port, EN);
 }
 
@@ -101,7 +103,7 @@ void printChar(uint8_t c) {
 
 void printString(uint8_t *s) {
 	uint8_t i=0;
-	
+	//while (s[i] == '\0') i++;
 	while(s[i] != '\0') {
 		printChar(s[i]);
 		i++;
@@ -126,6 +128,33 @@ void cursorpos(int col, int row){
 	if (row == 1) col += 0x7f;
 	if (row == 2) col += 0xbf;
 	sendCMD(col);
+}
+
+
+int num2text(uint16_t cislo) {
+
+	static uint8_t i, j, k;
+	static char text[16], pom;
+
+	i = 15;
+	while (cislo > 0) {
+		text[15-i] = cislo%10 + '0';
+		cislo /= 10;
+		i--;
+	}
+
+	i = 15;
+	while (text[i] == '\0') i--;
+
+	k = i;
+
+	for (j=0;j<(i+1)/2;j++) {
+		pom = text[j];
+		text[j] = text[k];
+		text[k] = pom;
+		k--;
+	}
+	return text;
 }
 
 /* Private functions ---------------------------------------------------------*/
