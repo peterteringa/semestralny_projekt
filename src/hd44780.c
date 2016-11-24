@@ -1,25 +1,20 @@
 #include "stm32l1xx.h"
 #include "hd44780.h"
+#include "defines.h"
 
-#define LCD_Port GPIOA
-#define RS GPIO_Pin_0
-#define EN GPIO_Pin_1
-#define D4 GPIO_Pin_6
-#define D5 GPIO_Pin_7
-#define D6 GPIO_Pin_4
-#define D7 GPIO_Pin_5
 
 void strobeEN(void);
 void upNib(uint8_t c);
 void downNib(uint8_t c);
 void Delay(uint32_t nCount);
 
+/************************************ inicializuj LCD **********************************/
 void lcdInit(void) {
 
 	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);						//GPIOA clock enable
 
 	GPIO_InitTypeDef GPIO_InitStructure;									//GPIOA initialization
-	GPIO_InitStructure.GPIO_Pin   = EN | RS | D4 | D5 | D6 | D7; 
+	GPIO_InitStructure.GPIO_Pin   = EN | RS | D4 | D5 | D6 | D7 | GPIO_Pin_5;
 	GPIO_ResetBits(LCD_Port, EN | RS | D4 | D5 | D6 | D7);
 	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
@@ -36,14 +31,14 @@ void lcdInit(void) {
 	sendCMD(0x0E);
 	Delay(0xffff);
 }
-
+/************************************ generuj hodinovy signal pre LCD ******************/
 void strobeEN(void) {
 	Delay(0x3ff);
 	GPIO_SetBits(LCD_Port, EN);
 	Delay(0x3ff);
 	GPIO_ResetBits(LCD_Port, EN);
 }
-
+/************************************ nastav horne 4 bity znaku ************************/
 void upNib(uint8_t c) {
 	if(c & 0x80)
 		GPIO_SetBits(LCD_Port, D7);
@@ -62,7 +57,7 @@ void upNib(uint8_t c) {
 	else
 		GPIO_ResetBits(LCD_Port, D4);
 }
-
+/************************************ nastav dolne 4 bity znaku ************************/
 void downNib(uint8_t c) {
 	if(c & 0x8)
 		GPIO_SetBits(LCD_Port, D7);
@@ -81,7 +76,7 @@ void downNib(uint8_t c) {
 	else
 		GPIO_ResetBits(LCD_Port, D4);
 }
-
+/************************************ posli prikaz *************************************/
 void sendCMD(uint8_t c) {
 	GPIO_ResetBits(LCD_Port, RS);
 	upNib(c);
@@ -89,7 +84,7 @@ void sendCMD(uint8_t c) {
 	downNib(c);
 	strobeEN();
 }
-
+/************************************ posli znak ***************************************/
 void printChar(uint8_t c) {
 	if(((c>=0x20)&&(c<=0x7F)) || ((c>=0xA0)&&(c<=0xFF))) {	//check if 'c' is within display boundry
 		GPIO_SetBits(LCD_Port, RS);
@@ -100,7 +95,7 @@ void printChar(uint8_t c) {
 		GPIO_ResetBits(LCD_Port, RS);
 	}
 }
-
+/************************************ posli retazec znakov *****************************/
 void printString(uint8_t *s) {
 	uint8_t i=0;
 	//while (s[i] == '\0') i++;
@@ -109,28 +104,30 @@ void printString(uint8_t *s) {
 		i++;
 	}
 }
-
+/************************************ vycisti displej **********************************/
 void clearLCD(void) {
 	sendCMD(0x01);
 }
-
+/************************************ skoc do riadku jedna *****************************/
 void toLine1(void) {
 	sendCMD(0x80);
 }
-
+/************************************ skoc do riadku dva *******************************/
 void toLine2(void) {
 	sendCMD(0xC0);
 }
+/************************************ vypni kurzor *************************************/
 void cursoroff(void){
 	sendCMD(0x0C);
 }
+/************************************ nastav poziciu kurzora na LDC ********************/
 void cursorpos(int col, int row){
 	if (row == 1) col += 0x7f;
 	if (row == 2) col += 0xbf;
 	sendCMD(col);
 }
 
-
+/************************************ prevod cisla na text *****************************/
 int num2text(uint16_t cislo) {
 
 	static uint8_t i, j, k;
@@ -157,15 +154,6 @@ int num2text(uint16_t cislo) {
 	return text;
 }
 
-/* Private functions ---------------------------------------------------------*/
-/*******************************************************************************
-* Function Name  : Delay
-* Description    : Inserts a delay time.
-* Input          : nCount: specifies the delay time length.
-* Output         : None
-* Return         : None
-* Note					 : ffff=5mS
-*******************************************************************************/
 void Delay(uint32_t nCount)
 {
   for(; nCount != 0; nCount--);

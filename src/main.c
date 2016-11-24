@@ -31,7 +31,12 @@ SOFTWARE.
 #include <stdio.h>
 #include "stm32l1xx.h"
 #include "hd44780.h"
+#include "nastav.h"
+#include "defines.h"
+#include "semestralny_projekt.h"
 
+uint16_t rpm = 3647, AD_value;
+uint32_t pockaj;
 
 /* Private typedef */
 /* Private define  */
@@ -71,22 +76,25 @@ int main(void)
   /* TODO - Add your application code here */
 
 	lcdInit();
+	gpio_init();
+	timer_init();
+	adc_init();
+	nvic_init();
 
 	clearLCD();
-	int otacky = 0;
 
 	cursoroff();
 	printString("Otacky: ");
 
-
   /* Infinite loop */
   while (1)
   {
-	  otacky++;
-
-	  cursorpos(9,1);
-	  printString(num2text(otacky));
-	  Delay(0xffff);
+		cursorpos(9,1);
+		printString(num2text(rpm));
+		ADC_SoftwareStartConv(ADC1);
+		pockaj = AD_value*256;
+		Delay(pockaj);
+		GPIO_ToggleBits(GPIOA, GPIO_Pin_5);
 
   }
   return 0;
