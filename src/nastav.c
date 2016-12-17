@@ -3,7 +3,7 @@
 #include "defines.h"
 
 
-volatile uint16_t predstih = 0xfff;
+volatile uint16_t predstih = 0xffff;
 
 /************************************ inicializuj GPIO ******************/
 void gpio_init(void) {
@@ -151,8 +151,8 @@ void timer_init(void) {
 	TIM_TimeBaseInit(TIM2, &TIM_InitStructure);
 
 	TIM_IC_InitStructure.TIM_Channel 		= TIM_Channel_1;
-	TIM_IC_InitStructure.TIM_ICPolarity 	= TIM_ICPolarity_Rising;
-	TIM_IC_InitStructure.TIM_ICPrescaler 	= 320;
+	TIM_IC_InitStructure.TIM_ICPolarity 	= TIM_ICPolarity_Falling;
+	TIM_IC_InitStructure.TIM_ICPrescaler 	= 0;
 	TIM_IC_InitStructure.TIM_ICFilter 		= 0x0;
 	TIM_IC_InitStructure.TIM_ICSelection 	= TIM_ICSelection_DirectTI;
 

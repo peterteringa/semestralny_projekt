@@ -10,7 +10,7 @@
 #include "defines.h"
 #include "hd44780.h"
 
-extern uint16_t rpm, AD_value;
+extern uint16_t rpm, AD_value, TIM_value;
 
 /************************************ odcitanie hodnoty z ADC ***********/
 void ADC1_IRQHandler (void){
@@ -26,10 +26,11 @@ void EXTI0_IRQHandler(void) {
 
 	if (EXTI_GetFlagStatus(DU_interrup)) {
 		EXTI_ClearFlag(DU_interrup);
-		/*TIM_Cmd(TIM2, ENABLE);
-		TIM_Cmd(TIM3, ENABLE);*/
 
-		rpm++;
+		TIM_Cmd(TIM2, ENABLE);
+		TIM_Cmd(TIM3, ENABLE);
+
+		//rpm++;
 	}
 }
 
@@ -39,11 +40,12 @@ void TIM2_IRQHandler(void) {
 	if (TIM_GetFlagStatus(TIM2, TIM_FLAG_CC1)) {
 		TIM_ClearFlag(TIM2, TIM_FLAG_CC1);
 
-		rpm++;
+		//rpm++;
 
-		/*rpm = 3000000/TIM_GetCapture1(TIM2);
+		TIM_value = TIM_GetCapture1(TIM2);
 		TIM_Cmd(TIM2, DISABLE);
-		TIM_Cmd(TIM3, DISABLE);*/
+		TIM2->CNT = 0;
+		TIM_Cmd(TIM3, DISABLE);
 	}
 }
 

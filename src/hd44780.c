@@ -1,7 +1,14 @@
 #include "stm32l1xx.h"
 #include "hd44780.h"
-#include "defines.h"
 
+/************************************ Port a Piny pre LCD *******************************/
+#define LCD_Port 		GPIOA
+#define RS 				GPIO_Pin_1
+#define EN 				GPIO_Pin_4
+#define D4 				GPIO_Pin_7
+#define D5 				GPIO_Pin_8
+#define D6 				GPIO_Pin_9
+#define D7 				GPIO_Pin_10
 
 void strobeEN(void);
 void upNib(uint8_t c);
@@ -132,6 +139,10 @@ int num2text(uint16_t cislo) {
 
 	static uint8_t i, j, k;
 	static char text[16], pom;
+
+	for (i=0;i<16;i++) text[i] = '\0';
+
+	if (cislo == 0) text[0] = '0';
 
 	i = 15;
 	while (cislo > 0) {
