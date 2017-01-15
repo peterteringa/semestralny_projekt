@@ -10,7 +10,7 @@
 #include "defines.h"
 #include "hd44780.h"
 
-extern uint16_t rpm, AD_value, TIM_value;
+extern uint16_t rpm, AD_value, TIM_value, predstih;
 
 /************************************ odcitanie hodnoty z ADC ***********/
 void ADC1_IRQHandler (void){
@@ -46,6 +46,8 @@ void TIM2_IRQHandler(void) {
 		TIM_Cmd(TIM2, DISABLE);
 		TIM2->CNT = 0;
 		TIM_Cmd(TIM3, DISABLE);
+
+		TIM3->CCR1 = predstih;
 	}
 }
 

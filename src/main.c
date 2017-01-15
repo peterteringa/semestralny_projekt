@@ -40,7 +40,7 @@ SOFTWARE.
 /* Private define  */
 /* Private macro */
 /* Private variables */
-volatile uint16_t rpm = 0, AD_value, TIM_value = 0, plyn = 0;
+volatile uint16_t rpm = 0, AD_value, TIM_value = 0, plyn = 0, predstih = 0, uhol1, uhol2, uhol;
 
 /* Private function prototypes */
 /* Private functions */
@@ -69,26 +69,32 @@ int main(void)
 	cursoroff();
 	printString("Otacky:");
 	toLine2();
-	printString("Plyn:");
+	printString("Predstih:");
 
   /* Infinite loop */
   while (1)
   {
-		cursorpos(9,1);
+
+		cursorpos(10,1);
 		rpm = 3*1000000/TIM_value;
-		//rpm = TIM_value;
+
+	  	uhol1 = 25,24-TIM_value/1485;
+	  	uhol2 = 3*(AD_value*MAX_rpm/4095-rpm)/1000;
+	  	uhol = uhol1 + uhol2;
+	  	predstih = (180-uhol)*TIM_value;
+
 		printString(num2text(rpm));
 		printString("   ");
 
 		ADC_SoftwareStartConv(ADC1);
 		plyn = AD_value*100/4095;
-		cursorpos(9,2);
-		printString(num2text(plyn));
-		//cursorpos(11,2);
-		printString("% ");
+
+		cursorpos(10,2);
+		printString(num2text(uhol));
+		printString("st ");
 
 		Delay(0x3ffff);
-		GPIO_ToggleBits(GPIOA, GPIO_Pin_5);
+		//GPIO_ToggleBits(GPIOA, GPIO_Pin_5);
 
   }
   return 0;

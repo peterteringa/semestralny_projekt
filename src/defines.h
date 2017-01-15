@@ -28,6 +28,6 @@
 
 #define TIM_prescal		320
 
-#define MAX_rpm			12000
+#define MAX_rpm			10000
 
 #endif /* DEFINES_H_ */

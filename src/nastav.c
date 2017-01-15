@@ -3,8 +3,6 @@
 #include "defines.h"
 
 
-volatile uint16_t predstih = 0xffff;
-
 /************************************ inicializuj GPIO ******************/
 void gpio_init(void) {
 
@@ -128,7 +126,7 @@ void timer_init(void) {
 	/**************************TIM3 riadni zapalovanie v OutputCompare mode*******************/
 
 	TIM_InitStructure.TIM_Prescaler 		= TIM_prescal;
-	TIM_InitStructure.TIM_Period 			= predstih;
+	TIM_InitStructure.TIM_Period 			= 0xffff;
 	TIM_InitStructure.TIM_CounterMode 		= TIM_CounterMode_Up;
 	TIM_InitStructure.TIM_ClockDivision 	= 0;
 
@@ -137,7 +135,7 @@ void timer_init(void) {
 	TIM_OC_InitStructure.TIM_OCMode 		= TIM_OCMode_Active;
 	TIM_OC_InitStructure.TIM_OCPolarity 	= TIM_OCPolarity_Low;
 	TIM_OC_InitStructure.TIM_OutputState 	= TIM_OutputState_Enable;
-	TIM_OC_InitStructure.TIM_Pulse 			= predstih;
+	TIM_OC_InitStructure.TIM_Pulse 			= 0xffff;
 
 	TIM_OC1Init(TIM3, &TIM_OC_InitStructure);
 

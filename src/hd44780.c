@@ -93,7 +93,7 @@ void sendCMD(uint8_t c) {
 }
 /************************************ posli znak ***************************************/
 void printChar(uint8_t c) {
-	if(((c>=0x20)&&(c<=0x7F)) || ((c>=0xA0)&&(c<=0xFF))) {	//check if 'c' is within display boundry
+	if(((c>=0x20)&&(c<=0x7F)) || ((c>=0xA0)&&(c<=0xFF))) {
 		GPIO_SetBits(LCD_Port, RS);
 		upNib(c);
 		strobeEN();
@@ -129,8 +129,8 @@ void cursoroff(void){
 }
 /************************************ nastav poziciu kurzora na LDC ********************/
 void cursorpos(int col, int row){
-	if (row == 1) col += 0x7f;
-	if (row == 2) col += 0xbf;
+	if (row == 1) col += 0x80;
+	if (row == 2) col += 0xc0;
 	sendCMD(col);
 }
 
